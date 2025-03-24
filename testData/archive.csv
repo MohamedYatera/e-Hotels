@@ -1,6 +1,6 @@
 archive_id,type,booking_a_id,renting_a_id,room_a_id,customer_a_id,start_date,end_date,status
 1,booking,1,,1,1,2025-01-01,2025-01-05,completed
-2,renting,,1,2,6,2025-01-10,2025-01-15,completed
+2,renting,,1,2,5,2025-01-10,2025-01-15,completed
 3,booking,2,,5,2,2025-01-20,2025-01-25,cancelled
-4,renting,,2,6,7,2025-02-01,2025-02-05,completed
+4,renting,,2,6,4,2025-02-01,2025-02-05,completed
 5,booking,3,,8,3,2025-02-10,2025-02-15,completed

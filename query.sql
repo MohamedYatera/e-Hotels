@@ -45,7 +45,7 @@ CREATE TABLE room (
 -- 5. Create Employee table with auto-increment ssne_id and a reference to person via person_ssn
 CREATE TABLE employee (
     ssne_id SERIAL PRIMARY KEY,
-    person_ssn VARCHAR(20),
+    person_ssn VARCHAR(20) UNIQUE,
     phone_number VARCHAR(20),
     first_name VARCHAR(50),
     last_name VARCHAR(50),

@@ -66,7 +66,7 @@ app.get("/customer", async (req, res) => {
 
 // Book room (by employee)
 app.post("/employee/create-booking", async (req, res) => {
-  const { customer_id, room_id, start_date, end_date } = req.body;
+  let { customer_id, room_id, start_date, end_date, employee_id } = req.body;
   try {
     // Check room availability first
     const availabilityCheck = `
@@ -85,13 +85,22 @@ AND status IN ('confirmed', 'pending')
       return res.redirect("/employee?error=" + encodeURIComponent("Room is not available for the selected dates"));
     }
 
+    const employee_b_id = await db.query(
+      "SELECT sssne_id FROM employee WHERE ssne_id = $1; ",
+      [person_ssn]
+    );
+
+
+    console.log(employee_b_id.rows);
+
+
     const query = `
-  INSERT INTO booking (room_b_id, customer_b_id, start_date, end_date, status)
-  VALUES ($1, $2, $3, $4, 'confirmed')
+  INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
+  VALUES ($1, $2, $3, $4, $5, 'confirmed')
   RETURNING booking_id;  
 `;
 
-    await db.query(query, [room_id, customer_id, start_date, end_date]);
+    await db.query(query, [room_id, customer_id, employee_id, start_date, end_date]);
     res.redirect("/employee?success=true");
   } catch (error) {
     console.error("Error booking room:", error);
@@ -152,6 +161,7 @@ app.post("/customer/book-room", async (req, res) => {
     const customerCheck = `SELECT * FROM customer WHERE person_ssn = $1`;
     const customerResult = await db.query(customerCheck, [customer_id]);
 
+
     if (customerResult.rows.length === 0) {
       return res.redirect("/customer?error=" + encodeURIComponent("Customer ID not found"));
     }
@@ -176,7 +186,7 @@ app.post("/customer/book-room", async (req, res) => {
       INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
       VALUES ($1, $2, NULL, $3, $4, 'pending')
     `;
-    await db.query(query, [room_id, customer_id, start_date, end_date]);
+    await db.query(query, [room_id, customerResult.rows[0].ssnc_id, start_date, end_date]);
     res.redirect("/customer?success=true");
   } catch (error) {
     console.error("Error booking room (customer):", error);
