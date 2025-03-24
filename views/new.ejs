@@ -186,22 +186,39 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Phone</th>
+                        <th>Registration Date</th>
+                        <th>Book id</th>
+                        <th>Rent id</th>
+
                       </tr>
                     </thead>
                     <tbody>
                       <% customers.forEach(function(customer) { %>
                         <tr>
                           <td>
-                            <%= customer.customer_id %>
+                            <%= customer.person_ssn %>
                           </td>
                           <td>
-                            <%= customer.name %>
+                            <%= customer.first_name %>
+                          </td>
+                          <td>
+                            <%= customer.last_name %>
                           </td>
                           <td>
                             <%= customer.email %>
                           </td>
                           <td>
+                            <%= customer.address %>
+                          </td>
+                          <td>
                             <%= customer.phone %>
+                          </td>
+                
+                          <td>
+                            <%= customer.book_id%>
+                          </td>
+                          <td>
+                            <%= customer.rent_id%>
                           </td>
                         </tr>
                         <% }); %>

@@ -36,11 +36,15 @@ app.get("/employee", async (req, res) => {
       ORDER BY start_date DESC
     `;
     const bookingsResult = await db.query(bookingsQuery);
+    const customersQuery = `SELECT * FROM customer`;
+
+    const customers = await db.query(customersQuery);
 
     res.render("new", {
       bookings: bookingsResult.rows,
       success: req.query.success,
-      error: req.query.error
+      error: req.query.error,
+      customers: customers.rows
     });
   } catch (error) {
     console.error("Error fetching bookings:", error);
