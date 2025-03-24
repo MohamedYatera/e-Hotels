@@ -20,7 +20,11 @@ const db = new pg.Client({
 db.connect();
 
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Synce database id with server
 setupBookingSequence();
+setupCustomerSequence();
+setupPersonSequence();
 
 // Home route
 app.get("/", async (req, res) => {
@@ -31,15 +35,15 @@ app.get("/", async (req, res) => {
 app.get("/employee", async (req, res) => {
   try {
     // Fetch active bookings to display on the dashboard
-    const bookingsQuery = `
+
+    const bookingsResult = await db.query(`
       SELECT * FROM booking 
       WHERE status IN ('confirmed', 'pending')
       ORDER BY start_date DESC
-    `;
-    const bookingsResult = await db.query(bookingsQuery);
-    const customersQuery = `SELECT * FROM customer`;
+    `);
 
-    const customers = await db.query(customersQuery);
+
+    const customers = await db.query(`SELECT * FROM customer`);
 
     res.render("new", {
       bookings: bookingsResult.rows,
@@ -85,23 +89,17 @@ AND status IN ('confirmed', 'pending')
     if (availabilityResult.rows.length > 0) {
       return res.redirect("/employee?error=" + encodeURIComponent("Room is not available for the selected dates"));
     }
-
-    const customer_id = await db.query(
+    
+    let customer_id = await db.query(
       "SELECT ssnc_id FROM customer WHERE person_ssn = $1; ",
       [customer_ssn_temp]
     );
 
 
-    console.log(customer_id);
-    console.log("test");
-    console.log(customer_id.rows[0]);
-    console.log("test2");
-    console.log(customer_id.rows);
-
 
     const query = `
-    INSERT INTO booking (booking_id, room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
-    VALUES (DEFAULT, $1, $2, $3, $4, $5, 'confirmed')
+    INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
+    VALUES ($1, $2, $3, $4, $5, 'confirmed')
     RETURNING booking_id;  
   `;
 
@@ -134,23 +132,31 @@ app.post("/check-in", async (req, res) => {
 });
 
 // Create customer
-app.post("/create-customer", async (req, res) => {
-  let { customer_id, first_name, last_name, phone_number, email, address, registration_date } = req.body;
+app.post("/employee/create-customer", async (req, res) => {
+  let { customer_ssn, first_name, last_name, email,phone_number,  address} = req.body;
   try {
     // Check if customer already exists
-    const checkQuery = `SELECT * FROM customer WHERE person_ssn = $1`;
-    const checkResult = await db.query(checkQuery, [customer_id]);
+    const checkResult = await db.query(`SELECT * FROM customer WHERE person_ssn = $1`, [customer_ssn]);
+  
 
     if (checkResult.rows.length > 0) {
       return res.redirect("/employee?error=" + encodeURIComponent("Customer ID already exists"));
     }
+    // we need to add in person first cause of the foreign key constraint in customer - person
+
+    const queryPerson = `
+    INSERT INTO person (ssn, phone_number, first_name, last_name, email, address)
+    VALUES ($1, $2, $3, $4, $5, $6)
+    `;
+    await db.query(queryPerson, [customer_ssn, phone_number, first_name, last_name, email, address]);
+
 
     const query = `
-      INSERT INTO customer (person_ssn, phone_number, first_name, last_name, email, address, registration_date)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO customer (person_ssn, phone_number, first_name, last_name, email, address)
+      VALUES ($1, $2, $3, $4, $5, $6)
     `;
 
-    await db.query(query, [customer_id, phone_number, first_name, last_name, email, address, registration_date]);
+    await db.query(query, [customer_ssn, phone_number, first_name, last_name, email, address]);
     res.redirect("/employee?success=true");
   } catch (error) {
     console.error("Error creating customer:", error);
@@ -160,16 +166,8 @@ app.post("/create-customer", async (req, res) => {
 
 // Book room (by customer)
 app.post("/customer/book-room", async (req, res) => {
-  let { customer_id, room_id, start_date, end_date } = req.body;
-  try {
-    // Verify the customer exists
-    const customerCheck = `SELECT * FROM customer WHERE person_ssn = $1`;
-    const customerResult = await db.query(customerCheck, [customer_id]);
-
-
-    if (customerResult.rows.length === 0) {
-      return res.redirect("/customer?error=" + encodeURIComponent("Customer ID not found"));
-    }
+  let { customer_ssn, first_name, last_name, email, phone_number, address, room_id, start_date, end_date } = req.body;
+ 
 
     // Check room availability
     const availabilityCheck = `
@@ -186,12 +184,45 @@ app.post("/customer/book-room", async (req, res) => {
       return res.redirect("/customer?error=" + encodeURIComponent("Room is not available for the selected dates"));
     }
 
-    // Insert booking with NULL employee_id for customer self-booking
-    const query = `
+    try {
+      // Verify the customer exists
+      const customerResult = await db.query(`SELECT * FROM customer WHERE person_ssn = $1`, [customer_ssn]);
+  
+      // add into person database table
+      if (customerResult.rows.length === 0) {
+        const queryPerson = `
+      INSERT INTO person (ssn, phone_number, first_name, last_name, email, address)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      `;
+      await db.query(queryPerson, [customer_ssn, phone_number, first_name, last_name, email, address]);
+  
+      // add into customer database table
+      const query = `
+        INSERT INTO customer (person_ssn, phone_number, first_name, last_name, email, address, registration_date)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `;
+  
+      await db.query(query, [customer_ssn, phone_number, first_name, last_name, email, address, start_date]);
+
+      // add into booking database table
+      const queryBook = `
       INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
-      VALUES ($1, $2, NULL, $3, $4, 'pending')
+      VALUES ($1, $2, $3, $4, $5, 'confirmed')
+      RETURNING booking_id;  
     `;
-    await db.query(query, [room_id, customerResult.rows[0].ssnc_id, start_date, end_date]);
+    // since putting it as null is not working we will set employee 1 as online booking done through customer
+    let employee_b_id = 1;
+    
+    let customer_id = await db.query(
+      "SELECT ssnc_id FROM customer WHERE person_ssn = $1; ",
+      [customer_ssn]
+    );
+
+ 
+  
+      await db.query(queryBook, [room_id, customer_id.rows[0].ssnc_id,employee_b_id,start_date, end_date]);
+      }
+
     res.redirect("/customer?success=true");
   } catch (error) {
     console.error("Error booking room (customer):", error);
@@ -284,7 +315,7 @@ app.get("/room/:id", async (req, res) => {
   }
 });
 
-// sync database id with server (for some reason importing causes id to start at 1 even if i already have data in the database)
+// sync database id with server (for some reason importing data causes id to start at 1 even if i already have data in the database - these will sync up the max id)
 async function setupBookingSequence() {
   try {
     const result = await db.query('SELECT MAX(booking_id) FROM booking');
@@ -295,6 +326,25 @@ async function setupBookingSequence() {
   }
 }
 
+async function setupCustomerSequence() {
+  try {
+    const result = await db.query('SELECT MAX(ssnc_id) FROM customer');
+    const maxId = result.rows[0].max || 0;
+    await db.query(`SELECT setval('customer_ssnc_id_seq', ${maxId})`);
+  } catch (error) {
+    console.error('Error setting up customer sequence:', error);
+  }
+}
+
+async function setupPersonSequence() {
+  try {
+    const result = await db.query('SELECT MAX(ssn) FROM person');
+    const maxId = result.rows[0].max || 0;
+    await db.query(`SELECT setval('person_ssn_seq', ${maxId})`);
+  } catch (error) {
+    console.error('Error setting up person sequence:', error);
+  }
+}
 
 
 app.listen(port, () => {
