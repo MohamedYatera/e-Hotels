@@ -1,11 +1,11 @@
-ssnc_id,person_ssn,phone_number,first_name,last_name,email,address,registration_date,book_id,rent_id,employee_id
-1,123-45-6789,555-123-4567,John,Smith,john.smith@email.com,"123 Main St, Seattle, WA 98101",2024-01-15,,,1
-2,234-56-7890,555-234-5678,Emily,Johnson,emily.j@email.com,"456 Pine Ave, Portland, OR 97201",2024-01-20,,,2
-3,345-67-8901,555-345-6789,Michael,Williams,michael.w@email.com,"789 Oak Blvd, San Francisco, CA 94105",2024-01-25,,,3
-4,456-78-9012,555-456-7890,Jennifer,Brown,jennifer.b@email.com,"101 Maple Dr, Los Angeles, CA 90001",2024-02-01,,,4
-5,567-89-0123,555-567-8901,David,Jones,david.jones@email.com,"202 Cedar Ln, Chicago, IL 60601",2024-02-05,,,5
-6,678-90-1234,555-678-9012,Sarah,Garcia,sarah.g@email.com,"303 Birch Rd, New York, NY 10001",2024-02-10,,,6
-7,789-01-2345,555-789-0123,Robert,Miller,robert.m@email.com,"404 Elm St, Boston, MA 02108",2024-02-15,,,7
-8,890-12-3456,555-890-1234,Linda,Davis,linda.d@email.com,"505 Willow Ave, Miami, FL 33101",2024-02-20,,,8
-9,901-23-4567,555-901-2345,James,Rodriguez,james.r@email.com,"606 Spruce Dr, Denver, CO 80201",2024-02-25,,,9
-10,012-34-5678,555-012-3456,Patricia,Martinez,patricia.m@email.com,"707 Fir Blvd, Austin, TX 78701",2024-03-01,,,10
+ssnc_id,person_ssn,phone_number,first_name,last_name,email,address,registration_date,employee_id
+1,123-45-6789,555-123-4567,John,Smith,john.smith@email.com,"123 Main St, Seattle, WA 98101",2024-01-15,1
+2,234-56-7890,555-234-5678,Emily,Johnson,emily.j@email.com,"456 Pine Ave, Portland, OR 97201",2024-01-20,2
+3,345-67-8901,555-345-6789,Michael,Williams,michael.w@email.com,"789 Oak Blvd, San Francisco, CA 94105",2024-01-25,3
+4,456-78-9012,555-456-7890,Jennifer,Brown,jennifer.b@email.com,"101 Maple Dr, Los Angeles, CA 90001",2024-02-01,4
+5,567-89-0123,555-567-8901,David,Jones,david.jones@email.com,"202 Cedar Ln, Chicago, IL 60601",2024-02-05,5
+6,678-90-1234,555-678-9012,Sarah,Garcia,sarah.g@email.com,"303 Birch Rd, New York, NY 10001",2024-02-10,6
+7,789-01-2345,555-789-0123,Robert,Miller,robert.m@email.com,"404 Elm St, Boston, MA 02108",2024-02-15,7
+8,890-12-3456,555-890-1234,Linda,Davis,linda.d@email.com,"505 Willow Ave, Miami, FL 33101",2024-02-20,8
+9,901-23-4567,555-901-2345,James,Rodriguez,james.r@email.com,"606 Spruce Dr, Denver, CO 80201",2024-02-25,9
+10,012-34-5678,555-012-3456,Patricia,Martinez,patricia.m@email.com,"707 Fir Blvd, Austin, TX 78701",2024-03-01,10

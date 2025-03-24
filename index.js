@@ -67,21 +67,17 @@ app.get("/customer", async (req, res) => {
 // Book room (by employee)
 app.post("/employee/create-booking", async (req, res) => {
   const { customer_id, room_id, start_date, end_date } = req.body;
-
-  const customer_id_int = parseInt(customer_id, 10);
-  if (isNaN(customer_id_int)) {
-    return res.redirect("/employee?error=" + encodeURIComponent("Customer ID must be a number"));
-  }
-
   try {
     // Check room availability first
     const availabilityCheck = `
-      SELECT * FROM booking 
-      WHERE room_b_id = $1 
-      AND ((start_date <= $2 AND end_date >= $2) 
-      OR (start_date <= $3 AND end_date >= $3)
-      OR (start_date >= $2 AND end_date <= $3))
-      AND status IN ('confirmed', 'pending')
+    SELECT * FROM booking 
+WHERE room_b_id = $1 
+AND (
+  (start_date < $3 AND end_date > $2) OR
+  (start_date < $2 AND end_date > $3) OR
+  (start_date >= $2 AND end_date <= $3)
+)
+AND status IN ('confirmed', 'pending')
     `;
     const availabilityResult = await db.query(availabilityCheck, [room_id, start_date, end_date]);
 
@@ -90,10 +86,12 @@ app.post("/employee/create-booking", async (req, res) => {
     }
 
     const query = `
-    INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
-    VALUES ($1, $2, $3, $4, $5, 'confirmed')
-  `;
-    await db.query(query, [room_id, customer_id_int, 1, start_date, end_date]);
+  INSERT INTO booking (room_b_id, customer_b_id, start_date, end_date, status)
+  VALUES ($1, $2, $3, $4, 'confirmed')
+  RETURNING booking_id;  
+`;
+
+    await db.query(query, [room_id, customer_id, start_date, end_date]);
     res.redirect("/employee?success=true");
   } catch (error) {
     console.error("Error booking room:", error);
@@ -150,14 +148,9 @@ app.post("/create-customer", async (req, res) => {
 app.post("/customer/book-room", async (req, res) => {
   const { customer_id, room_id, start_date, end_date } = req.body;
   try {
-
-    const customer_id_int = parseInt(customer_id, 10);
-    if (isNaN(customer_id_int)) {
-      return res.redirect("/customer?error=" + encodeURIComponent("Customer ID must be a number"));
-    }
-
+    // Verify the customer exists
     const customerCheck = `SELECT * FROM customer WHERE person_ssn = $1`;
-    const customerResult = await db.query(customerCheck, [customer_id_int]);
+    const customerResult = await db.query(customerCheck, [customer_id]);
 
     if (customerResult.rows.length === 0) {
       return res.redirect("/customer?error=" + encodeURIComponent("Customer ID not found"));
@@ -180,11 +173,10 @@ app.post("/customer/book-room", async (req, res) => {
 
     // Insert booking with NULL employee_id for customer self-booking
     const query = `
-    INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
-    VALUES ($1, $2, NULL, $3, $4, 'pending')
-  `;
-    await db.query(query, [room_id, customer_id_int, start_date, end_date]);
-
+      INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
+      VALUES ($1, $2, NULL, $3, $4, 'pending')
+    `;
+    await db.query(query, [room_id, customer_id, start_date, end_date]);
     res.redirect("/customer?success=true");
   } catch (error) {
     console.error("Error booking room (customer):", error);

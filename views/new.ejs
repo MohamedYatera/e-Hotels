@@ -160,7 +160,7 @@
 
                       <h4>Create a New Booking</h4>
                       <form action="/employee/create-booking" method="POST">
-                        <input type="hidden" id="employee_id" name="employee_id" value="1">
+
                         <label for="customer_id">Customer ID:</label>
                         <input type="text" id="customer_id" name="customer_id" required>
                         <br>
@@ -184,20 +184,20 @@
                     <thead>
                       <tr>
                         <th>Customer ID</th>
-                        <th>Name</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
                         <th>Email</th>
+                        <th>Address</th>
                         <th>Phone</th>
-                        <th>Registration Date</th>
-                        <th>Book id</th>
-                        <th>Rent id</th>
-
+                        <th>Book ID</th>
+                        <th>Rent ID</th>
                       </tr>
                     </thead>
                     <tbody>
                       <% customers.forEach(function(customer) { %>
                         <tr>
                           <td>
-                            <%= customer.person_ssn %>
+                            <%= customer.ssnc_id %>
                           </td>
                           <td>
                             <%= customer.first_name %>
@@ -212,14 +212,13 @@
                             <%= customer.address %>
                           </td>
                           <td>
-                            <%= customer.phone %>
-                          </td>
-                
-                          <td>
-                            <%= customer.book_id%>
+                            <%= customer.phone_number %>
                           </td>
                           <td>
-                            <%= customer.rent_id%>
+                            <%= customer.book_id %>
+                          </td>
+                          <td>
+                            <%= customer.rent_id %>
                           </td>
                         </tr>
                         <% }); %>
