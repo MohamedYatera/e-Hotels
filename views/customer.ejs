@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>e-Hotels - Customer View</title>
+  <link rel="stylesheet" href="./styles/main.css">
+  <style>
+    .success-message {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+
+    .error-message {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+
+    .room-list li {
+      background: #f0f8ff;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      transition: transform 0.2s;
+    }
+
+    .room-list li:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .book-button {
+      background-color: #28a745;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .view-details {
+      display: inline-block;
+      background-color: #007bff;
+      color: white;
+      padding: 8px 15px;
+      text-decoration: none;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>e-Hotels</h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/customer">Customer Dashboard</a>
+      <a href="/employee">Employee Dashboard</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2>Welcome, Valued Customer!</h2>
+    <p>Search for available rooms below and book your stay!</p>
+
+    <!-- Success and Error Messages -->
+    <% if (typeof success !=='undefined' && success) { %>
+      <div class="success-message">
+        <p>Room booked successfully! Your booking is pending confirmation.</p>
+      </div>
+      <% } %>
+
+        <% if (typeof error !=='undefined' && error) { %>
+          <div class="error-message">
+            <p>
+              <%= error %>
+            </p>
+          </div>
+          <% } %>
+
+            <section id="search-rooms">
+              <h3>Search Available Rooms</h3>
+              <form action="/search-rooms" method="GET">
+                <label for="start_date">Start Date:</label>
+                <input type="date" id="start_date" name="start_date" required>
+                <br>
+                <label for="end_date">End Date:</label>
+                <input type="date" id="end_date" name="end_date" required>
+                <br>
+                <label for="room_capacity">Room Capacity:</label>
+                <select id="room_capacity" name="room_capacity">
+                  <option value="single">Single</option>
+                  <option value="double">Double</option>
+                  <option value="suite">Suite</option>
+                </select>
+                <br>
+                <label for="price_range">Price Range:</label>
+                <input type="text" id="price_range" name="price_range" placeholder="e.g., 100-300">
+                <br>
+                <button type="submit">Search Rooms</button>
+              </form>
+            </section>
+
+            <!-- Display search results -->
+            <% if (typeof rooms !=='undefined' && rooms.length> 0) { %>
+              <section id="results">
+                <h3>Available Rooms</h3>
+                <ul class="room-list">
+                  <% rooms.forEach(room=> { %>
+                    <li>
+                      <!-- Room image placeholder -->
+                      <div class="room-img">
+                        <img src="/images/placeholder.png" alt="Room Image"
+                          style="width: 100%; height: 100%; object-fit: cover;">
+                      </div>
+                      <div class="room-details">
+                        <p><strong>Room ID:</strong>
+                          <%= room.room_id %>
+                        </p>
+                        <p><strong>Capacity:</strong>
+                          <%= room.room_capacity %>
+                        </p>
+                        <p><strong>Price:</strong> $<%= room.price %> per night</p>
+                        <p><strong>View:</strong>
+                          <%= room.view %>
+                        </p>
+                        <p><strong>Amenities:</strong>
+                          <%= room.amenities %>
+                        </p>
+
+                        <a href="/room/<%= room.room_id %>" class="view-details">View Details</a>
+
+                        <!-- Quick booking form -->
+                        <form action="/customer/book-room" method="POST" style="display: inline-block;">
+                          <input type="hidden" name="room_id" value="<%= room.room_id %>">
+                          <label for="customer_id_<%= room.room_id %>">Your Customer ID:</label>
+                          <input type="text" id="customer_id_<%= room.room_id %>" name="customer_id" required size="10">
+                          <input type="hidden" name="start_date"
+                            value="<%= typeof start_date !== 'undefined' ? start_date : '' %>">
+                          <input type="hidden" name="end_date"
+                            value="<%= typeof end_date !== 'undefined' ? end_date : '' %>">
+                          <button type="submit" class="book-button">Quick Book</button>
+                        </form>
+                      </div>
+                    </li>
+                    <% }); %>
+                </ul>
+              </section>
+              <% } else if (typeof rooms !=='undefined' ) { %>
+                <p>No rooms available for the selected criteria.</p>
+                <% } %>
+
+                  <section id="book-room">
+                    <h3>Book a Room</h3>
+                    <form action="/customer/book-room" method="POST">
+                      <label for="customer_id">Customer ID:</label>
+                      <input type="text" id="customer_id" name="customer_id" required>
+                      <br>
+                      <label for="room_id">Room ID:</label>
+                      <input type="text" id="room_id" name="room_id" required>
+                      <br>
+                      <label for="start_date_book">Start Date:</label>
+                      <input type="date" id="start_date_book" name="start_date" required>
+                      <br>
+                      <label for="end_date_book">End Date:</label>
+                      <input type="date" id="end_date_book" name="end_date" required>
+                      <br>
+                      <button type="submit">Book Room</button>
+                    </form>
+                  </section>
+
+  </div>
+
+  <script>
+    // Pass search parameters to the quick booking forms
+    document.addEventListener('DOMContentLoaded', function () {
+      // Get the search parameters from the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const startDate = urlParams.get('start_date');
+      const endDate = urlParams.get('end_date');
+
+      // If we have dates from the search, update the hidden form fields
+      if (startDate && endDate) {
+        const startDateInputs = document.querySelectorAll('input[name="start_date"]');
+        const endDateInputs = document.querySelectorAll('input[name="end_date"]');
+
+        startDateInputs.forEach(input => {
+          input.value = startDate;
+        });
+
+        endDateInputs.forEach(input => {
+          input.value = endDate;
+        });
+
+        // Also update the date fields in the main booking form
+        document.getElementById('start_date_book').value = startDate;
+        document.getElementById('end_date_book').value = endDate;
+      }
+    });
+  </script>
+</body>
+
+</html>

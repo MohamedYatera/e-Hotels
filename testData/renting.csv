@@ -1,0 +1,6 @@
+renting_id,room_r_id,customer_r_id,employee_r_id,start_date,end_date,payment_status
+1,2,6,2,2025-03-25,2025-03-30,paid
+2,6,7,4,2025-03-20,2025-03-25,paid
+3,9,8,6,2025-03-15,2025-03-20,paid
+4,12,9,8,2025-03-10,2025-03-15,unpaid
+5,15,10,10,2025-03-05,2025-03-10,paid

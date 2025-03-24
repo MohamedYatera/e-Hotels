@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Hotels - Room Details</title>
+    <link rel="stylesheet" href="/styles/main.css">
+</head>
+
+<body>
+    <header>
+        <h1>e-Hotels</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/customer">Customer Dashboard</a>
+            <a href="/employee">Employee Dashboard</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Room Details</h2>
+
+        <div class="room-detail-container">
+            <div class="room-image">
+                <img src="/images/placeholder.png" alt="Room Image" style="max-width: 100%; height: auto;">
+            </div>
+
+            <div class="room-info">
+                <h3>Room <%= room.room_id %>
+                </h3>
+                <p><strong>Capacity:</strong>
+                    <%= room.room_capacity %>
+                </p>
+                <p><strong>Price:</strong> $<%= room.price %> per night</p>
+                <p><strong>View:</strong>
+                    <%= room.view %>
+                </p>
+                <p><strong>Amenities:</strong>
+                    <%= room.amenities %>
+                </p>
+
+                <div class="booking-section">
+                    <h4>Book This Room</h4>
+                    <form action="/customer/book-room" method="POST">
+                        <input type="hidden" name="room_id" value="<%= room.room_id %>">
+
+                        <label for="customer_id">Customer ID:</label>
+                        <input type="text" id="customer_id" name="customer_id" required>
+                        <br>
+
+                        <label for="start_date">Check-in Date:</label>
+                        <input type="date" id="start_date" name="start_date" required>
+                        <br>
+
+                        <label for="end_date">Check-out Date:</label>
+                        <input type="date" id="end_date" name="end_date" required>
+                        <br>
+
+                        <button type="submit">Book Now</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-button">
+            <a href="/customer" class="btn">Back to Search</a>
+        </div>
+    </div>
+
+    <style>
+        .room-detail-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .room-image {
+            flex: 1;
+            min-width: 300px;
+            margin-right: 20px;
+        }
+
+        .room-info {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .booking-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .btn:hover {
+            background-color: #555;
+        }
+    </style>
+</body>
+
+</html>

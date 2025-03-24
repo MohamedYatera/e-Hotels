@@ -1,0 +1,41 @@
+room_id,price,room_capacity,view,status,amenities,problems,hroom_id
+1,250.00,single,city,available,"TV,WiFi,Mini-bar",,1
+2,350.00,double,park,available,"TV,WiFi,Mini-bar,Coffee maker",,1
+3,500.00,suite,city,available,"TV,WiFi,Mini-bar,Kitchen,Jacuzzi",,1
+4,600.00,suite,park,maintenance,"TV,WiFi,Mini-bar,Kitchen,Jacuzzi","AC issues",1
+5,200.00,single,lake,available,"TV,WiFi",,2
+6,300.00,double,lake,available,"TV,WiFi,Coffee maker",,2
+7,450.00,suite,city,available,"TV,WiFi,Mini-bar,Kitchen",,2
+8,200.00,single,ocean,available,"TV,WiFi,Mini-bar",,3
+9,300.00,double,ocean,available,"TV,WiFi,Mini-bar,Coffee maker",,3
+10,600.00,suite,ocean,available,"TV,WiFi,Mini-bar,Kitchen,Jacuzzi,Balcony",,3
+11,150.00,single,mountain,available,"TV,WiFi",,4
+12,250.00,double,mountain,available,"TV,WiFi,Coffee maker",,4
+13,350.00,suite,city,maintenance,"TV,WiFi,Mini-bar,Kitchen","Plumbing issues",4
+14,180.00,single,bay,available,"TV,WiFi,Mini-bar",,5
+15,280.00,double,bay,available,"TV,WiFi,Mini-bar,Coffee maker",,5
+16,380.00,suite,bay,available,"TV,WiFi,Mini-bar,Kitchen,Balcony",,5
+17,200.00,single,desert,available,"TV,WiFi,Mini-bar",,6
+18,280.00,double,desert,available,"TV,WiFi,Mini-bar,Coffee maker",,6
+19,500.00,suite,city,available,"TV,WiFi,Mini-bar,Kitchen,Jacuzzi",,7
+20,400.00,double,city,available,"TV,WiFi,Mini-bar,Coffee maker,Balcony",,7
+21,300.00,single,city,available,"TV,WiFi,Mini-bar",,7
+22,250.00,single,bay,available,"TV,WiFi,Mini-bar",,8
+23,350.00,double,bay,available,"TV,WiFi,Mini-bar,Coffee maker",,8
+24,550.00,suite,bay,available,"TV,WiFi,Mini-bar,Kitchen,Jacuzzi",,8
+25,300.00,single,garden,available,"TV,WiFi,Mini-bar",,9
+26,400.00,double,river,available,"TV,WiFi,Mini-bar,Coffee maker",,9
+27,600.00,suite,river,available,"TV,WiFi,Mini-bar,Kitchen,Jacuzzi,Balcony",,9
+28,250.00,single,city,available,"TV,WiFi,Mini-bar",,10
+29,350.00,double,city,available,"TV,WiFi,Mini-bar,Coffee maker",,10
+30,170.00,single,strip,available,"TV,WiFi",,11
+31,270.00,double,strip,available,"TV,WiFi,Coffee maker",,11
+32,250.00,single,ocean,available,"TV,WiFi,Mini-bar",,12
+33,350.00,double,ocean,available,"TV,WiFi,Mini-bar,Coffee maker",,12
+34,180.00,single,city,available,"TV,WiFi",,13
+35,280.00,double,city,available,"TV,WiFi,Coffee maker",,13
+36,300.00,single,park,available,"TV,WiFi,Mini-bar",,14
+37,400.00,double,park,available,"TV,WiFi,Mini-bar,Coffee maker",,14
+38,180.00,single,lake,available,"TV,WiFi",,15
+39,280.00,double,lake,available,"TV,WiFi,Coffee maker",,15
+40,380.00,suite,city,available,"TV,WiFi,Mini-bar,Kitchen",,15

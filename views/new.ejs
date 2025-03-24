@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>e-Hotels - Employee Dashboard</title>
+  <link rel="stylesheet" href="./styles/new.css">
+  <style>
+    .success-message {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+
+    .error-message {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+
+    .tab-container {
+      margin-top: 20px;
+    }
+
+    .tab-buttons {
+      display: flex;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .tab-button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #f1f1f1;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .tab-button.active {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-top: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    form {
+      margin-top: 20px;
+    }
+
+    input,
+    select,
+    button {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Employee Dashboard</h1>
+    <nav class="employee-nav">
+      <a href="/">Home</a>
+      <a href="/employee">Dashboard</a>
+    </nav>
+  </header>
+
+  <div class="employee-container">
+    <h2>Manage Bookings and Customers</h2>
+
+    <!-- Success and Error Messages -->
+    <% if (typeof success !=='undefined' && success) { %>
+      <div class="success-message">
+        <p>Operation completed successfully!</p>
+      </div>
+      <% } %>
+
+        <% if (typeof error !=='undefined' && error) { %>
+          <div class="error-message">
+            <p>
+              <%= error %>
+            </p>
+          </div>
+          <% } %>
+
+            <div class="tab-container">
+              <div class="tab-buttons">
+                <button class="tab-button active" data-tab="bookings">Bookings</button>
+                <button class="tab-button" data-tab="customers">Customers</button>
+              </div>
+
+              <div id="bookings" class="tab-content active">
+                <h3>Bookings</h3>
+                <% if (typeof bookings !=='undefined' && bookings.length> 0) { %>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Booking ID</th>
+                        <th>Customer ID</th>
+                        <th>Room ID</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% bookings.forEach(function(booking) { %>
+                        <tr>
+                          <td>
+                            <%= booking.booking_id %>
+                          </td>
+                          <td>
+                            <%= booking.customer_b_id %>
+                          </td>
+                          <td>
+                            <%= booking.room_b_id %>
+                          </td>
+                          <td>
+                            <%= new Date(booking.start_date).toLocaleDateString("en-US") %>
+                          </td>
+                          <td>
+                            <%= new Date(booking.end_date).toLocaleDateString("en-US") %>
+                          </td>
+                          <td>
+                            <%= booking.status %>
+                          </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                  </table>
+                  <% } else { %>
+                    <p>No bookings available.</p>
+                    <% } %>
+
+                      <h4>Create a New Booking</h4>
+                      <form action="/employee/create-booking" method="POST">
+                        <label for="customer_id">Customer ID:</label>
+                        <input type="text" id="customer_id" name="customer_id" required>
+                        <br>
+                        <label for="room_id">Room ID:</label>
+                        <input type="text" id="room_id" name="room_id" required>
+                        <br>
+                        <label for="start_date">Start Date:</label>
+                        <input type="date" id="start_date" name="start_date" required>
+                        <br>
+                        <label for="end_date">End Date:</label>
+                        <input type="date" id="end_date" name="end_date" required>
+                        <br>
+                        <button type="submit">Create Booking</button>
+                      </form>
+              </div>
+
+              <div id="customers" class="tab-content">
+                <h3>Customers</h3>
+                <% if (typeof customers !=='undefined' && customers.length> 0) { %>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Customer ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% customers.forEach(function(customer) { %>
+                        <tr>
+                          <td>
+                            <%= customer.customer_id %>
+                          </td>
+                          <td>
+                            <%= customer.name %>
+                          </td>
+                          <td>
+                            <%= customer.email %>
+                          </td>
+                          <td>
+                            <%= customer.phone %>
+                          </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                  </table>
+                  <% } else { %>
+                    <p>No customers found.</p>
+                    <% } %>
+
+                      <h4>Create a New Customer</h4>
+                      <form action="/employee/create-customer" method="POST">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required>
+                        <br>
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                        <br>
+                        <label for="phone">Phone:</label>
+                        <input type="text" id="phone" name="phone" required>
+                        <br>
+                        <button type="submit">Create Customer</button>
+                      </form>
+              </div>
+            </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      tabButtons.forEach(button => {
+        button.addEventListener('click', function () {
+          // Remove active class from all buttons and tab contents
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          tabContents.forEach(content => content.classList.remove('active'));
+
+          // Activate the clicked button and corresponding tab content
+          this.classList.add('active');
+          document.getElementById(this.getAttribute('data-tab')).classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

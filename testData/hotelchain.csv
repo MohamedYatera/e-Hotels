@@ -1,0 +1,6 @@
+hotel_chain_id,hc_central_office_address,hotel_number,hc_phone_number,emails
+1,"100 Corporate Dr, New York, NY 10001",12,555-100-1000,info@luxehotels.com
+2,"200 Business Ave, Chicago, IL 60602",15,555-200-2000,contact@comfortinns.com
+3,"300 Executive Blvd, Los Angeles, CA 90010",10,555-300-3000,hello@grandstay.com
+4,"400 Finance St, Houston, TX 77002",8,555-400-4000,info@plazaresorts.com
+5,"500 Commerce Way, Miami, FL 33101",14,555-500-5000,contact@sunsethotels.com
