@@ -160,6 +160,7 @@
 
                       <h4>Create a New Booking</h4>
                       <form action="/employee/create-booking" method="POST">
+                        <input type="hidden" id="employee_id" name="employee_id" value="1">
                         <label for="customer_id">Customer ID:</label>
                         <input type="text" id="customer_id" name="customer_id" required>
                         <br>
