@@ -20,6 +20,7 @@ const db = new pg.Client({
 db.connect();
 
 app.use(bodyParser.urlencoded({ extended: true }));
+setupBookingSequence();
 
 // Home route
 app.get("/", async (req, res) => {
@@ -66,7 +67,7 @@ app.get("/customer", async (req, res) => {
 
 // Book room (by employee)
 app.post("/employee/create-booking", async (req, res) => {
-  let { customer_id, room_id, start_date, end_date, employee_id } = req.body;
+  let { customer_ssn_temp, room_id, start_date, end_date, employee_id } = req.body;
   try {
     // Check room availability first
     const availabilityCheck = `
@@ -85,22 +86,26 @@ AND status IN ('confirmed', 'pending')
       return res.redirect("/employee?error=" + encodeURIComponent("Room is not available for the selected dates"));
     }
 
-    const employee_b_id = await db.query(
-      "SELECT sssne_id FROM employee WHERE ssne_id = $1; ",
-      [person_ssn]
+    const customer_id = await db.query(
+      "SELECT ssnc_id FROM customer WHERE person_ssn = $1; ",
+      [customer_ssn_temp]
     );
 
 
-    console.log(employee_b_id.rows);
+    console.log(customer_id);
+    console.log("test");
+    console.log(customer_id.rows[0]);
+    console.log("test2");
+    console.log(customer_id.rows);
 
 
     const query = `
-  INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
-  VALUES ($1, $2, $3, $4, $5, 'confirmed')
-  RETURNING booking_id;  
-`;
+    INSERT INTO booking (booking_id, room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
+    VALUES (DEFAULT, $1, $2, $3, $4, $5, 'confirmed')
+    RETURNING booking_id;  
+  `;
 
-    await db.query(query, [room_id, customer_id, employee_id, start_date, end_date]);
+    await db.query(query, [room_id, customer_id.rows[0].ssnc_id, employee_id, start_date, end_date]);
     res.redirect("/employee?success=true");
   } catch (error) {
     console.error("Error booking room:", error);
@@ -110,7 +115,7 @@ AND status IN ('confirmed', 'pending')
 
 
 
-// Check-in route
+// Check-in route ................................ to do
 app.post("/check-in", async (req, res) => {
   const { rental_id, employee_id_checkin } = req.body;
   try {
@@ -130,7 +135,7 @@ app.post("/check-in", async (req, res) => {
 
 // Create customer
 app.post("/create-customer", async (req, res) => {
-  const { customer_id, first_name, last_name, phone_number, email, address, registration_date } = req.body;
+  let { customer_id, first_name, last_name, phone_number, email, address, registration_date } = req.body;
   try {
     // Check if customer already exists
     const checkQuery = `SELECT * FROM customer WHERE person_ssn = $1`;
@@ -155,7 +160,7 @@ app.post("/create-customer", async (req, res) => {
 
 // Book room (by customer)
 app.post("/customer/book-room", async (req, res) => {
-  const { customer_id, room_id, start_date, end_date } = req.body;
+  let { customer_id, room_id, start_date, end_date } = req.body;
   try {
     // Verify the customer exists
     const customerCheck = `SELECT * FROM customer WHERE person_ssn = $1`;
@@ -278,6 +283,19 @@ app.get("/room/:id", async (req, res) => {
     res.status(500).send("Error fetching room details");
   }
 });
+
+// sync database id with server (for some reason importing causes id to start at 1 even if i already have data in the database)
+async function setupBookingSequence() {
+  try {
+    const result = await db.query('SELECT MAX(booking_id) FROM booking');
+    const maxId = result.rows[0].max || 0;
+    await db.query(`SELECT setval('booking_booking_id_seq', ${maxId})`);
+  } catch (error) {
+    console.error('Error setting up booking sequence:', error);
+  }
+}
+
+
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

@@ -161,8 +161,8 @@
                       <h4>Create a New Booking</h4>
                       <form action="/employee/create-booking" method="POST">
 
-                        <label for="customer_id">Customer ID:</label>
-                        <input type="text" id="customer_id" name="customer_id" required>
+                        <label for="customer_ssn_temp">Customer ID:</label>
+                        <input type="text" id="customer_ssn_temp" name="customer_ssn_temp" required>
                         <br>
                         <label for="room_id">Room ID:</label>
                         <input type="text" id="room_id" name="room_id" required>
@@ -173,7 +173,7 @@
                         <label for="end_date">End Date:</label>
                         <input type="date" id="end_date" name="end_date" required>
                         <br>
-                        <label for="employee_id ">Employee ID:</label>
+                        <label for="employee_id ">Employee ID (Single digit):</label>
                         <input type="text" id="employee_id " name="employee_id" required>
                         <br>
                         <button type="submit">Create Booking</button>
@@ -192,8 +192,6 @@
                         <th>Email</th>
                         <th>Address</th>
                         <th>Phone</th>
-                        <th>Book ID</th>
-                        <th>Rent ID</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -217,12 +215,7 @@
                           <td>
                             <%= customer.phone_number %>
                           </td>
-                          <td>
-                            <%= customer.book_id %>
-                          </td>
-                          <td>
-                            <%= customer.rent_id %>
-                          </td>
+                          
                         </tr>
                         <% }); %>
                     </tbody>
