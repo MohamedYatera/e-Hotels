@@ -4,8 +4,9 @@ body {
     background-color: #e9ecef;
   }
   
+
   header {
-    background-color: #007bff;
+    background-color: #1c4e85;
     color: #fff;
     padding: 1em;
     text-align: center;
@@ -59,5 +60,13 @@ body {
   th, td {
     padding: 10px;
     text-align: left;
+  }
+
+  .tab-content {
+    display: none;
+  }
+  
+  .tab-content.active {
+    display: block;
   }
   

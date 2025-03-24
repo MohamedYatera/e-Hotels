@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Synce database id with server
 setupBookingSequence();
 setupCustomerSequence();
-setupPersonSequence();
+
 
 // Home route
 app.get("/", async (req, res) => {
@@ -249,11 +249,11 @@ app.get("/search-rooms", async (req, res) => {
 
     // Query to find available rooms
     const query = `
-      SELECT r.room_id, r.room_capacity, r.price, r.view, r.amenities
-      FROM room r
-      WHERE r.room_capacity = $1
-      AND r.price BETWEEN $2 AND $3
-      AND r.room_id NOT IN (
+      SELECT room_id, room_capacity, price, view, amenities
+      FROM room 
+      WHERE room_capacity = $1
+      AND price BETWEEN $2 AND $3
+      AND room_id NOT IN (
         SELECT room_b_id FROM booking
         WHERE (
           (start_date <= $4 AND end_date >= $4)
@@ -336,15 +336,7 @@ async function setupCustomerSequence() {
   }
 }
 
-async function setupPersonSequence() {
-  try {
-    const result = await db.query('SELECT MAX(ssn) FROM person');
-    const maxId = result.rows[0].max || 0;
-    await db.query(`SELECT setval('person_ssn_seq', ${maxId})`);
-  } catch (error) {
-    console.error('Error setting up person sequence:', error);
-  }
-}
+
 
 
 app.listen(port, () => {
