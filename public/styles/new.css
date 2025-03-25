@@ -26,13 +26,14 @@ header {
 
 .employee-nav a {
   margin-right: 15px;
-  color: #193692;
+  color: #000000;
   text-decoration: none;
   font-weight: bold;
 }
 
 .employee-nav a:hover {
   text-decoration: underline;
+  color: #2835a8;
 }
 
 section {
@@ -72,3 +73,41 @@ td {
 .tab-content.active {
   display: block;
 }
+
+button {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #555;
+}
+
+form {
+  max-width: 400px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+

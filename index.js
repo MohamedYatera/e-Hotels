@@ -38,7 +38,7 @@ app.get("/employee", async (req, res) => {
 
     const bookingsResult = await db.query(`
       SELECT * FROM booking 
-      WHERE status IN ('confirmed', 'pending')
+      WHERE status IN ('confirmed', 'pending check-in')
       ORDER BY start_date DESC
     `);
 
@@ -74,18 +74,39 @@ app.post("/employee/create-booking", async (req, res) => {
   let { customer_ssn_temp, room_id, start_date, end_date, employee_id } = req.body;
   try {
     // Check room availability first
+    const startDateTime = new Date(start_date);
+    const endDateTime = new Date(end_date);
+    
+    if (startDateTime >= endDateTime) {
+      return res.redirect("/employee?error=" + encodeURIComponent("Start date must be before end date"));
+    }
+
+    // Check if room exists and is available
+    const roomCheck = await db.query(
+      "SELECT status FROM room WHERE room_id = $1",
+      [room_id]
+    );
+
+    if (roomCheck.rows.length === 0) {
+      return res.redirect("/employee?error=" + encodeURIComponent("Room does not exist"));
+    }
+
+    if (roomCheck.rows[0].status !== 'available') {
+      return res.redirect("/employee?error=" + encodeURIComponent("Room is not currently available"));
+    }
+
+    // Improved availability check query
     const availabilityCheck = `
-    SELECT * FROM booking 
-WHERE room_b_id = $1 
-AND (
-  (start_date < $3 AND end_date > $2) OR
-  (start_date < $2 AND end_date > $3) OR
-  (start_date >= $2 AND end_date <= $3)
-)
-AND status IN ('confirmed', 'pending')
+    SELECT * FROM booking
+    WHERE room_b_id = $1
+    AND status IN ('confirmed', 'pending check-in')
+    AND (
+      (start_date < $3 AND end_date > $2)
+    )
     `;
     const availabilityResult = await db.query(availabilityCheck, [room_id, start_date, end_date]);
-
+    
+    // If any overlapping bookings exist, room is not available
     if (availabilityResult.rows.length > 0) {
       return res.redirect("/employee?error=" + encodeURIComponent("Room is not available for the selected dates"));
     }
@@ -95,6 +116,9 @@ AND status IN ('confirmed', 'pending')
       [customer_ssn_temp]
     );
 
+    if (customer_id.rows.length === 0) {
+      return res.redirect("/employee?error=" + encodeURIComponent("Customer not found, Please Register the Customer first"));
+    }
 
 
     const query = `
@@ -176,7 +200,7 @@ app.post("/customer/book-room", async (req, res) => {
       AND ((start_date <= $2 AND end_date >= $2) 
       OR (start_date <= $3 AND end_date >= $3)
       OR (start_date >= $2 AND end_date <= $3))
-      AND status IN ('confirmed', 'pending')
+      AND status IN ('confirmed', 'pending check-in')
     `;
     const availabilityResult = await db.query(availabilityCheck, [room_id, start_date, end_date]);
 
@@ -207,7 +231,7 @@ app.post("/customer/book-room", async (req, res) => {
       // add into booking database table
       const queryBook = `
       INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
-      VALUES ($1, $2, $3, $4, $5, 'confirmed')
+      VALUES ($1, $2, $3, $4, $5, 'pending check-in')
       RETURNING booking_id;  
     `;
     // since putting it as null is not working we will set employee 1 as online booking done through customer
@@ -260,7 +284,7 @@ app.get("/search-rooms", async (req, res) => {
           OR (start_date <= $5 AND end_date >= $5)
           OR (start_date >= $4 AND end_date <= $5)
         )
-        AND status IN ('confirmed', 'pending', 'checked-in')
+        AND status IN ('confirmed', 'pending check-in', 'checked-in')
       )
     `;
 

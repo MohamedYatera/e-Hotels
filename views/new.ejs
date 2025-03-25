@@ -87,23 +87,23 @@
                     <p>No bookings available.</p>
                     <% } %>
 
-                      <h4>Create a New Booking</h4>
+                      <h3>Create a New Booking</h4>
                       <form action="/employee/create-booking" method="POST">
 
                         <label for="customer_ssn_temp">Customer ID:</label>
-                        <input type="text" id="customer_ssn_temp" name="customer_ssn_temp" required>
+                        <input type="text" id="customer_ssn_temp" name="customer_ssn_temp" required placeholder="Customer SSN...">
                         <br>
                         <label for="room_id">Room ID:</label>
-                        <input type="text" id="room_id" name="room_id" required>
+                        <input type="text" id="room_id" name="room_id" required placeholder="Room ID...">
                         <br>
                         <label for="start_date">Start Date:</label>
-                        <input type="date" id="start_date" name="start_date" required>
+                        <input type="date" id="start_date" name="start_date" required >
                         <br>
                         <label for="end_date">End Date:</label>
                         <input type="date" id="end_date" name="end_date" required>
                         <br>
                         <label for="employee_id ">Employee ID (Single digit):</label>
-                        <input type="text" id="employee_id " name="employee_id" required>
+                        <input type="text" id="employee_id " name="employee_id" required placeholder="Your ID...">
                         <br>
                         <button type="submit">Create Booking</button>
                       </form>
@@ -156,24 +156,24 @@
                       <h4>Create a New Customer</h4>
                       <form action="/employee/create-customer" method="POST">
                         <label for="customer_ssn">Customer Social Security:</label>
-                        <input type="text" id="customer_ssn" name="customer_ssn" required>
+                        <input type="text" id="customer_ssn" name="customer_ssn" required placeholder="Customer SSN...">
                         <br>
                         <label for="first_name">First Name:</label>
-                        <input type="text" id="first_name" name="first_name" required>
+                        <input type="text" id="first_name" name="first_name" required placeholder="First Name...">
                         <br>
                         <label for="last_name">Last Name:</label>
-                        <input type="text" id="last_name" name="last_name" required>
+                        <input type="text" id="last_name" name="last_name" required placeholder="Last Name...">
                         <br>
                         <label for="email">Email:</label>
-                        <input type="text" id="email" name="email" required>
+                        <input type="text" id="email" name="email" required placeholder="Email..">
                         <br>
                         <label for="phone_number">Phone Number:</label>
-                        <input type="text" id="phone_number" name="phone_number" required>
+                        <input type="text" id="phone_number" name="phone_number" required placeholder="Phone Number...">
                         <br>
                         <label for="address">Address:</label>
-                        <input type="text" id="address" name="address" required>
+                        <input type="text" id="address" name="address" required placeholder="Address">
                         <br>
-                        <button type="submit">Create Customer</button>
+                        <button   type="submit">Create Customer</button>
                       </form>
               </div>
             </div>

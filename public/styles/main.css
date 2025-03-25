@@ -6,15 +6,25 @@ body {
 }
 
 header {
-  background-color: #333;
+  background-color: #c28842;
   color: #fff;
   padding: 1em 2em;
 }
 
+.title {
+  color: #000000;
+}
+
 nav a {
-  color: #fff;
+  color: #000000;
   text-decoration: none;
+  font-weight: bold;
   margin-right: 15px;
+}
+
+nav a:hover {
+  text-decoration: underline;
+  color: #1f52b1;
 }
 
 .container {
@@ -122,6 +132,8 @@ button:hover {
   border-radius: 5px;
   margin-bottom: 15px;
 }
+
+
 
 .room-list li {
   background: #f0f8ff;

@@ -10,7 +10,7 @@
 
 <body>
     <header>
-        <h1>e-Hotels</h1>
+        <h1 class="title">e-Hotels</h1>
         <nav>
             <a href="/">Home</a>
             <a href="/customer">Customer Dashboard</a>
@@ -23,7 +23,7 @@
 
         <div class="room-detail-container">
             <div class="room-image">
-                <img src="/images/placeholder.png" alt="Room Image" style="max-width: 100%; height: auto;">
+                <img src="/styles/double-queen.jpg" alt="Room Image" style="max-width: 100%; height: auto;">
             </div>
 
             <div class="room-info">
@@ -43,21 +43,34 @@
                 <div class="booking-section">
                     <h4>Book This Room</h4>
                     <form action="/customer/book-room" method="POST">
-                        <input type="hidden" name="room_id" value="<%= room.room_id %>">
-
-                        <label for="customer_id">Customer ID:</label>
-                        <input type="text" id="customer_id" name="customer_id" required>
+                        <label for="customer_ssn">Customer Social Security:</label>
+                        <input type="text" id="customer_ssn" name="customer_ssn" required>
                         <br>
-
-                        <label for="start_date">Check-in Date:</label>
-                        <input type="date" id="start_date" name="start_date" required>
+                        <label for="first_name">First Name:</label>
+                        <input type="text" id="first_name" name="first_name" required>
                         <br>
-
-                        <label for="end_date">Check-out Date:</label>
-                        <input type="date" id="end_date" name="end_date" required>
+                        <label for="last_name">Last Name:</label>
+                        <input type="text" id="last_name" name="last_name" required>
                         <br>
-
-                        <button type="submit">Book Now</button>
+                        <label for="email">Email:</label>
+                        <input type="text" id="email" name="email" required>
+                        <br>
+                        <label for="phone_number">Phone Number:</label>
+                        <input type="text" id="phone_number" name="phone_number" required>
+                        <br>
+                        <label for="address">Address:</label>
+                        <input type="text" id="address" name="address" required>
+                        <br>
+                        <label for="room_id">Room ID:</label>
+                        <input type="text" id="room_id" name="room_id" required>
+                        <br>
+                        <label for="start_date_book">Start Date:</label>
+                        <input type="date" id="start_date_book" name="start_date" required>
+                        <br>
+                        <label for="end_date_book">End Date:</label>
+                        <input type="date" id="end_date_book" name="end_date" required>
+                        <br>
+                        <button type="submit">Book Room</button>
                     </form>
                 </div>
             </div>
