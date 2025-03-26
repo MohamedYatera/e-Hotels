@@ -7,12 +7,13 @@
   <title>e-Hotels - Employee Dashboard</title>
   <link rel="stylesheet" href="./styles/new.css">
   <style>
-   
+
   </style>
 </head>
 
 <body>
   <header>
+
     <h1>Employee Dashboard</h1>
     <nav class="employee-nav">
       <a href="/">Home</a>
@@ -86,27 +87,58 @@
                   <% } else { %>
                     <p>No bookings available.</p>
                     <% } %>
+                      <div class="edit">
+                        <form action="/employee/create-booking" method="POST">
+                          <h3>Create a New Booking</h3>
+                          <label for="customer_ssn_temp">Customer ID:</label>
+                          <input type="text" id="customer_ssn_temp" name="customer_ssn_temp" required
+                            placeholder="Customer SSN...">
+                          <br>
+                          <label for="room_id">Room ID:</label>
+                          <input type="text" id="room_id" name="room_id" required placeholder="Room ID...">
+                          <br>
+                          <label for="start_date">Start Date:</label>
+                          <input type="date" id="start_date" name="start_date" required>
+                          <br>
+                          <label for="end_date">End Date:</label>
+                          <input type="date" id="end_date" name="end_date" required>
+                          <br>
+                          <label for="employee_id ">Employee ID (Single digit):</label>
+                          <input type="text" id="employee_id " name="employee_id" required placeholder="Your ID...">
+                          <br>
+                          <button type="submit">Create Booking</button>
+                        </form>
 
-                      <h3>Create a New Booking</h4>
-                      <form action="/employee/create-booking" method="POST">
+                        <form action="/employee/check-in" method="POST">
+                          <h3>Check-In booking ("pending check-in")</h3>
+                          <label for="customer_ssn">Customer ID:</label>
+                          <input type="text" id="customer_ssn" name="customer_ssn" required
+                            placeholder="Customer SSN...">
+                          <br>
+                          <label for="payment_id">Credit Card Number:</label>
+                          <input type="text" id="payment_id" name="payment_id" required
+                            placeholder="Credit Card Number...">
+                          <br>
 
-                        <label for="customer_ssn_temp">Customer ID:</label>
-                        <input type="text" id="customer_ssn_temp" name="customer_ssn_temp" required placeholder="Customer SSN...">
-                        <br>
-                        <label for="room_id">Room ID:</label>
-                        <input type="text" id="room_id" name="room_id" required placeholder="Room ID...">
-                        <br>
-                        <label for="start_date">Start Date:</label>
-                        <input type="date" id="start_date" name="start_date" required >
-                        <br>
-                        <label for="end_date">End Date:</label>
-                        <input type="date" id="end_date" name="end_date" required>
-                        <br>
-                        <label for="employee_id ">Employee ID (Single digit):</label>
-                        <input type="text" id="employee_id " name="employee_id" required placeholder="Your ID...">
-                        <br>
-                        <button type="submit">Create Booking</button>
-                      </form>
+                          <button type="submit">Check-In Customer</button>
+                        </form>
+
+
+                        <form action="/employee/delete" method="POST">
+                          <h3>Delete Booking</h3>
+                          <label for="customer_ssn">Customer ID:</label>
+                          <input type="text" id="customer_ssn" name="customer_ssn" required
+                            placeholder="Customer SSN...">
+                          <br>
+
+                          <button type="submit" class="delete-btn">Delete</button>
+                        </form>
+
+
+                      </div>
+
+
+
               </div>
 
               <div id="customers" class="tab-content">
@@ -116,6 +148,7 @@
                     <thead>
                       <tr>
                         <th>Customer ID</th>
+                        <th>Customer SSN</th>
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Email</th>
@@ -128,6 +161,9 @@
                         <tr>
                           <td>
                             <%= customer.ssnc_id %>
+                          </td>
+                          <td>
+                            <%= customer.person_ssn %>
                           </td>
                           <td>
                             <%= customer.first_name %>
@@ -144,7 +180,7 @@
                           <td>
                             <%= customer.phone_number %>
                           </td>
-                          
+
                         </tr>
                         <% }); %>
                     </tbody>
@@ -153,7 +189,7 @@
                     <p>No customers found.</p>
                     <% } %>
 
-                      <h4>Create a New Customer</h4>
+                      <h3>Create a New Customer</h3>
                       <form action="/employee/create-customer" method="POST">
                         <label for="customer_ssn">Customer Social Security:</label>
                         <input type="text" id="customer_ssn" name="customer_ssn" required placeholder="Customer SSN...">
@@ -173,7 +209,7 @@
                         <label for="address">Address:</label>
                         <input type="text" id="address" name="address" required placeholder="Address">
                         <br>
-                        <button   type="submit">Create Customer</button>
+                        <button type="submit">Create Customer</button>
                       </form>
               </div>
             </div>

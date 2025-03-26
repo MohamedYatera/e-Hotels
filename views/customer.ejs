@@ -7,13 +7,13 @@
   <title>e-Hotels - Customer View</title>
   <link rel="stylesheet" href="/styles/main.css ">
   <style>
-    
+
   </style>
 </head>
 
 <body>
   <header>
-    <h1>e-Hotels</h1>
+    <h1 class="title">e-Hotels</h1>
     <nav>
       <a href="/">Home</a>
       <a href="/customer">Customer Dashboard</a>
@@ -56,6 +56,20 @@
                   <option value="suite">Suite</option>
                 </select>
                 <br>
+                <label for="view">View</label>
+                <select id="view" name="view">
+                  <option value="city">city</option>
+                  <option value="park">park</option>
+                  <option value="city">city</option>
+                  <option value="lake">lake</option>
+                  <option value="ocean">ocean</option>
+                  <option value="mountain">mountain</option>
+                  <option value="desert">desert</option>
+                  <option value="bay">bay</option>
+                  <option value="river">river</option>
+                  <option value="garden">garden</option>
+                </select>
+                <br>
                 <label for="price_range">Price Range:</label>
                 <input type="text" id="price_range" name="price_range" placeholder="e.g., 100-300">
                 <br>
@@ -72,8 +86,7 @@
                     <li>
                       <!-- Room image placeholder -->
                       <div class="room-img">
-                        <img src="/styles/double-queen.jpg" alt="Room Image"
-                          style="width: 100%; height: 100%">
+                        <img src="/styles/double-queen.jpg" alt="Room Image" style="width: 100%; height: 100%">
                       </div>
                       <div class="room-details">
                         <p><strong>Room ID:</strong>
@@ -89,21 +102,19 @@
                         <p><strong>Amenities:</strong>
                           <%= room.amenities %>
                         </p>
+                        <p><strong>Problems:</strong>
+                          <% if (room.problems==null) { %>
+                            No problems reported
+                            <% } else { %>
+                              <%= room.problems %>
+                                <% } %>
+                        </p>
 
-                        <a href="/room/<%= room.room_id %>" class="view-details">View Details</a>
+                        <a href="/room/<%= room.room_id %>" class="view-details">View Details/ Book</a>
 
-                        <!-- Quick booking form -->
-                        <form action="/customer/book-room" method="POST" style="display: inline-block;">
-                          <input type="hidden" name="room_id" value="<%= room.room_id %>">
-                          <label for="customer_id_<%= room.room_id %>">Your Customer ID:</label>
-                          <input type="text" id="customer_id_<%= room.room_id %>" name="customer_id" required size="10">
-                          <input type="hidden" name="start_date"
-                            value="<%= typeof start_date !== 'undefined' ? start_date : '' %>">
-                          <input type="hidden" name="end_date"
-                            value="<%= typeof end_date !== 'undefined' ? end_date : '' %>">
-                          <button type="submit" class="book-button">Quick Book</button>
-                        </form>
+
                       </div>
+                      
                     </li>
                     <% }); %>
                 </ul>

@@ -101,19 +101,8 @@ CREATE TABLE booking (
     FOREIGN KEY (employee_b_id) REFERENCES employee(ssne_id)
 );
 
--- 9. Create Renting table with auto-increment renting_id
-CREATE TABLE renting (
-    renting_id SERIAL PRIMARY KEY,
-    room_r_id INT,
-    customer_r_id INT,
-    employee_r_id INT,
-    start_date DATE,
-    end_date DATE,
-    payment_status VARCHAR(20),
-    FOREIGN KEY (room_r_id) REFERENCES room(room_id),
-    FOREIGN KEY (customer_r_id) REFERENCES customer(ssnc_id),
-    FOREIGN KEY (employee_r_id) REFERENCES employee(ssne_id)
-);
+
+
 
 -- 10. Create Archive table with auto-increment archive_id
 CREATE TABLE archive (
@@ -127,7 +116,6 @@ CREATE TABLE archive (
     end_date DATE,
     status VARCHAR(20),
     FOREIGN KEY (booking_a_id) REFERENCES booking(booking_id),
-    FOREIGN KEY (renting_a_id) REFERENCES renting(renting_id),
     FOREIGN KEY (room_a_id) REFERENCES room(room_id),
     FOREIGN KEY (customer_a_id) REFERENCES customer(ssnc_id)
 );

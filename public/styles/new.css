@@ -11,6 +11,27 @@ header {
   text-align: center;
 }
 
+.edit{
+  display: flex;
+  align-items: top;
+  flex-direction: row;
+  margin-top: 25px;
+  justify-content: space-evenly;
+
+}
+
+.delete-btn{
+  background-color: #ff0000;
+  padding: 10px 20px;
+  margin: 4px 2px;
+  border-radius: 16px;
+}
+
+.delete-btn:hover {
+  background-color: #610808;
+}
+
+
 .employee-container {
   width: 90%;
   margin: 2em auto;
@@ -89,8 +110,9 @@ button {
 }
 
 button:hover {
-  background-color: #555;
+  background-color: #174605;
 }
+
 
 form {
   max-width: 400px;
@@ -98,7 +120,7 @@ form {
   background: #f8f9fa;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+  font-family: Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;
 }
 
 input {

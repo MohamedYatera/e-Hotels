@@ -1,0 +1,4 @@
+booking_id,room_b_id,customer_b_id,employee_b_id,start_date,end_date,status
+3,8,3,5,2025-04-05,2025-04-10,confirmed
+9,15,7,1,2025-03-24,2025-03-25,confirmed
+4,11,4,7,2025-04-20,2025-04-25,confirmed
