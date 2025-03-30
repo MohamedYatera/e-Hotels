@@ -70,6 +70,29 @@ app.get("/employee", async (req, res) => {
   }
 });
 
+app.get("/manager", async (req, res) => {
+  try {
+    // Fetch active bookings to display on the dashboard
+
+    const archiveResult = await db.query(`
+      SELECT * FROM archive
+    `);
+
+
+    res.render("manager", {
+      archive: archiveResult.rows, 
+      error: req.query.error,
+      
+    });
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    res.render("new", {
+      archive: [],
+      error: "Failed to load bookings"
+    });
+  }
+});
+
 
 // Book room (by employee)
 app.post("/employee/create-booking", async (req, res) => {

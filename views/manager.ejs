@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Hotels - Manager Dashboard</title>
+    <link rel="stylesheet" href="./styles/new.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <header>
+
+        <h1>Manager Dashboard</h1>
+        <nav class="employee-nav">
+            <a href="/">Home</a>
+            <a href="/employee">Employee Dashboard</a>
+            <a href="/manager">Archive</a>
+        </nav>
+    </header>
+
+    <div class="employee-container">
+        <h2>Archive</h2>
+
+
+
+        <% if (typeof error !=='undefined' && error) { %>
+            <div class="error-message">
+                <p>
+                    <%= error %>
+                </p>
+            </div>
+            <% } %>
+
+                <div id="bookings">
+                    <h3>Archive List</h3>
+                    <% if (typeof archive !=='undefined' && archive.length> 0) { %>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Archive ID</th>
+                                    <th>Type</th>
+                                    <th>Booking ID</th>
+                                    <th>Room ID</th>
+                                    <th>Customer ID</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% archive.forEach(function(archive) { %>
+                                    <tr>
+                                        <td>
+                                            <%= archive.archive_id %>
+                                        </td>
+                                        <td>
+                                            <%= archive.type %>
+                                        </td>
+                                        <td>
+                                            <%= archive.booking_a_id %>
+                                        </td>
+                                        <td>
+                                            <%= archive.room_a_id %>
+                                        </td>
+                                        <td>
+                                            <%= archive.customer_a_id %>
+                                        </td>
+
+                                        <td>
+                                            <%= new Date(archive.start_date).toLocaleDateString("en-US") %>
+                                        </td>
+                                        <td>
+                                            <%= new Date(archive.end_date).toLocaleDateString("en-US") %>
+                                        </td>
+                                        <td>
+                                            <%= archive.status %>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                        <% } %>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const tabButtons = document.querySelectorAll('.tab-button');
+                        const tabContents = document.querySelectorAll('.tab-content');
+
+                        tabButtons.forEach(button => {
+                            button.addEventListener('click', function () {
+                                // Remove active class from all buttons and tab contents
+                                tabButtons.forEach(btn => btn.classList.remove('active'));
+                                tabContents.forEach(content => content.classList.remove('active'));
+
+                                // Activate the clicked button and corresponding tab content
+                                this.classList.add('active');
+                                document.getElementById(this.getAttribute('data-tab')).classList.add('active');
+                            });
+                        });
+                    });
+                </script>
+</body>
+
+</html>
