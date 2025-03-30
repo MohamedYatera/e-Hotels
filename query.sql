@@ -1,4 +1,4 @@
--- 1. Create Person table (using SSN as provided externally)
+
 CREATE TABLE person (
     ssn VARCHAR(20) PRIMARY KEY,
     phone_number VARCHAR(20),
@@ -8,7 +8,7 @@ CREATE TABLE person (
     address VARCHAR(200)
 );
 
--- 2. Create Hotel Chain table with auto-increment hotel_chain_id
+
 CREATE TABLE hotel_chain (
     hotel_chain_id SERIAL PRIMARY KEY,
     hc_central_office_address VARCHAR(200),
@@ -17,7 +17,7 @@ CREATE TABLE hotel_chain (
     emails VARCHAR(200)
 );
 
--- 3. Create Hotel table with auto-increment hotel_id
+
 CREATE TABLE hotel (
     hotel_id SERIAL PRIMARY KEY,
     rating INT,
@@ -29,7 +29,7 @@ CREATE TABLE hotel (
     FOREIGN KEY (hotelchain_id) REFERENCES hotel_chain(hotel_chain_id)
 );
 
--- 4. Create Room table with auto-increment room_id
+
 CREATE TABLE room (
     room_id SERIAL PRIMARY KEY,
     price NUMERIC(10,2),
@@ -42,7 +42,6 @@ CREATE TABLE room (
     FOREIGN KEY (hroom_id) REFERENCES hotel(hotel_id)
 );
 
--- 5. Create Employee table with auto-increment ssne_id and a reference to person via person_ssn
 CREATE TABLE employee (
     ssne_id SERIAL PRIMARY KEY,
     person_ssn VARCHAR(20) UNIQUE,
@@ -57,7 +56,7 @@ CREATE TABLE employee (
     FOREIGN KEY (person_ssn) REFERENCES person(ssn)
 );
 
--- 6. Create Manager table with auto-increment ssnm_id and a reference to person via person_ssn
+
 CREATE TABLE manager (
     ssnm_id SERIAL PRIMARY KEY,
     person_ssn VARCHAR(20),
@@ -71,8 +70,7 @@ CREATE TABLE manager (
     FOREIGN KEY (person_ssn) REFERENCES person(ssn)
 );
 
--- 7. Create Customer table with auto-increment ssnc_id and a reference to person via person_ssn
--- Removed book_id and rent_id fields to avoid circular references
+
 CREATE TABLE customer (
     ssnc_id SERIAL PRIMARY KEY,
     person_ssn VARCHAR(20),
@@ -87,7 +85,7 @@ CREATE TABLE customer (
     FOREIGN KEY (employee_id) REFERENCES employee(ssne_id)
 );
 
--- 8. Create Booking table with auto-increment booking_id
+
 CREATE TABLE booking (
     booking_id SERIAL PRIMARY KEY,
     room_b_id INT,
@@ -104,12 +102,11 @@ CREATE TABLE booking (
 
 
 
--- 10. Create Archive table with auto-increment archive_id
+
 CREATE TABLE archive (
     archive_id SERIAL PRIMARY KEY,
     type VARCHAR(20),
     booking_a_id INT,
-    renting_a_id INT,
     room_a_id INT,
     customer_a_id INT,
     start_date DATE,
