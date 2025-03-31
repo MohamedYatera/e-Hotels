@@ -6,5 +6,4 @@ manager.csv
 customer.csv
 room.csv
 booking.csv
-renting.csv
 archive.csv

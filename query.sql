@@ -116,3 +116,57 @@ CREATE TABLE archive (
     FOREIGN KEY (room_a_id) REFERENCES room(room_id),
     FOREIGN KEY (customer_a_id) REFERENCES customer(ssnc_id)
 );
+
+
+-- Trigger function to update room availability
+CREATE OR REPLACE FUNCTION update_room_status()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    -- When a booking is created, set the room status to 'booked'
+    UPDATE room
+    SET status = 'booked'
+    WHERE room_id = NEW.room_b_id;
+  ELSIF TG_OP = 'DELETE' THEN
+    -- When a booking is deleted, set the room status to 'available'
+    UPDATE room
+    SET status = 'available'
+    WHERE room_id = OLD.room_b_id;
+  END IF;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger for bookings table
+CREATE TRIGGER trigger_update_room_status
+AFTER INSERT OR DELETE ON booking
+FOR EACH ROW
+EXECUTE FUNCTION update_room_status();
+
+-- Trigger function to archive completed bookings
+CREATE OR REPLACE FUNCTION archive_completed_booking()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Check if the status is being updated to 'completed'
+  IF NEW.status = 'completed' THEN
+    INSERT INTO archive (type, booking_a_id, room_a_id, customer_a_id, start_date, end_date, status)
+    VALUES (
+      'booking',
+      NEW.booking_id,
+      NEW.room_b_id,
+      NEW.customer_b_id,
+      NEW.start_date,
+      NEW.end_date,
+      'completed'
+    );
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger for bookings table
+CREATE TRIGGER trigger_archive_completed_booking
+AFTER UPDATE OF status ON booking
+FOR EACH ROW
+WHEN (NEW.status = 'completed')
+EXECUTE FUNCTION archive_completed_booking();

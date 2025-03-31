@@ -80,9 +80,9 @@ app.get("/manager", async (req, res) => {
 
 
     res.render("manager", {
-      archive: archiveResult.rows, 
+      archive: archiveResult.rows,
       error: req.query.error,
-      
+
     });
   } catch (error) {
     console.error("Error fetching bookings:", error);
@@ -101,7 +101,7 @@ app.post("/employee/create-booking", async (req, res) => {
     // Check room availability first
     const startDateTime = new Date(start_date);
     const endDateTime = new Date(end_date);
-    
+
     if (startDateTime >= endDateTime) {
       return res.redirect("/employee?error=" + encodeURIComponent("Start date must be before end date"));
     }
@@ -120,24 +120,24 @@ app.post("/employee/create-booking", async (req, res) => {
       return res.redirect("/employee?error=" + encodeURIComponent("Room is not currently available"));
     }
 
-    // Improved availability check query
+    // Check for overlapping bookings
     const availabilityCheck = `
-    SELECT * FROM booking
-    WHERE room_b_id = $1
-    AND status IN ('confirmed', 'pending check-in')
-    AND (
-      (start_date < $3 AND end_date > $2)
-    )
+      SELECT * FROM booking
+      WHERE room_b_id = $1
+      AND status IN ('confirmed', 'pending check-in')
+      AND (
+        (start_date < $3 AND end_date > $2)
+      )
     `;
     const availabilityResult = await db.query(availabilityCheck, [room_id, start_date, end_date]);
-    
-    // If any overlapping bookings exist, room is not available
+
     if (availabilityResult.rows.length > 0) {
       return res.redirect("/employee?error=" + encodeURIComponent("Room is not available for the selected dates"));
     }
-    
+
+    // Get customer ID
     let customer_id = await db.query(
-      "SELECT ssnc_id FROM customer WHERE person_ssn = $1; ",
+      "SELECT ssnc_id FROM customer WHERE person_ssn = $1;",
       [customer_ssn_temp]
     );
 
@@ -145,25 +145,15 @@ app.post("/employee/create-booking", async (req, res) => {
       return res.redirect("/employee?error=" + encodeURIComponent("Customer not found, Please Register the Customer first"));
     }
 
-
+    // Insert booking
     const query = `
-    INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
-    VALUES ($1, $2, $3, $4, $5, 'confirmed')
-    RETURNING booking_id;  
-  `;
-
+      INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
+      VALUES ($1, $2, $3, $4, $5, 'confirmed')
+      RETURNING booking_id;
+    `;
     await db.query(query, [room_id, customer_id.rows[0].ssnc_id, employee_id, start_date, end_date]);
 
-    // Update room availability
-    await db.query("UPDATE room SET status = 'booked' WHERE room_id = $1", [room_id]);
-
-    // add to archives database
-    let bookid = await db.query("SELECT booking_id FROM booking WHERE customer_b_id = $1", [customer_id.rows[0].ssnc_id]);
-
-    const queryArchive = `INSERT INTO archive (type, booking_a_id, room_a_id, customer_a_id, start_date, end_date, status) VALUES ('renting', $1, $2, $3, $5, $6)`;
-
-    await db.query(queryArchive, [bookid, room_id, customer_id.rows[0].ssnc_id, start_date, end_date, 'completed']);
-    
+    // Triggers will handle room availability and archive updates
     res.redirect("/employee?success=true");
   } catch (error) {
     console.error("Error booking room:", error);
@@ -175,7 +165,7 @@ app.post("/employee/create-booking", async (req, res) => {
 
 // Check-in route 
 app.post("/employee/check-in", async (req, res) => {
-  const { customer_ssn} = req.body;
+  const { customer_ssn } = req.body;
   try {
     let customer_id = await db.query(
       "SELECT ssnc_id FROM customer WHERE person_ssn = $1; ",
@@ -189,7 +179,7 @@ app.post("/employee/check-in", async (req, res) => {
 
     // change archive type from booking to renting
     await db.query(`UPDATE archive SET type = 'renting' WHERE customer_a_id = $1`, [customer_id.rows[0].ssnc_id]);
-    
+
 
     res.redirect("/employee?success=true");
   } catch (error) {
@@ -200,27 +190,20 @@ app.post("/employee/check-in", async (req, res) => {
 
 // delete booking route 
 app.post("/employee/delete", async (req, res) => {
-  const { customer_ssn} = req.body;
+  const { customer_ssn } = req.body;
   try {
     let customer_id = await db.query(
-      "SELECT ssnc_id FROM customer WHERE person_ssn = $1; ",
+      "SELECT ssnc_id FROM customer WHERE person_ssn = $1;",
       [customer_ssn]
     );
 
     // Delete booking
     await db.query(`DELETE FROM booking WHERE customer_b_id = $1`, [customer_id.rows[0].ssnc_id]);
 
-    // get room id from customer ssn
-    await db.query(`UPDATE room SET status = 'available' WHERE room_id = (SELECT room_b_id FROM booking WHERE customer_b_id = $1)`, [customer_id.rows[0].ssnc_id]);
-
-    // update archive set status to cancelled
-    await db.query(`UPDATE archive SET status = 'cancelled' WHERE customer_a_id = $1`, [customer_id.rows[0].ssnc_id]);
-
-
-
+    // Triggers will handle room availability and archive updates
     res.redirect("/employee?success=true");
   } catch (error) {
-    console.error("Error during check-in:", error);
+    console.error("Error deleting booking:", error);
     res.redirect("/employee?error=" + encodeURIComponent(error.message));
   }
 });
@@ -228,11 +211,11 @@ app.post("/employee/delete", async (req, res) => {
 
 // Create customer
 app.post("/employee/create-customer", async (req, res) => {
-  let { customer_ssn, first_name, last_name, email,phone_number,  address} = req.body;
+  let { customer_ssn, first_name, last_name, email, phone_number, address } = req.body;
   try {
     // Check if customer already exists
     const checkResult = await db.query(`SELECT * FROM customer WHERE person_ssn = $1`, [customer_ssn]);
-  
+
 
     if (checkResult.rows.length > 0) {
       return res.redirect("/employee?error=" + encodeURIComponent("Customer ID already exists"));
@@ -262,10 +245,10 @@ app.post("/employee/create-customer", async (req, res) => {
 // Book room (by customer)
 app.post("/customer/book-room", async (req, res) => {
   let { customer_ssn, first_name, last_name, email, phone_number, address, room_id, start_date, end_date } = req.body;
- 
 
-    // Check room availability
-    const availabilityCheck = `
+
+  // Check room availability
+  const availabilityCheck = `
       SELECT * FROM booking 
       WHERE room_b_id = $1 
       AND ((start_date <= $2 AND end_date >= $2) 
@@ -273,30 +256,30 @@ app.post("/customer/book-room", async (req, res) => {
       OR (start_date >= $2 AND end_date <= $3))
       AND status IN ('confirmed', 'pending check-in')
     `;
-    const availabilityResult = await db.query(availabilityCheck, [room_id, start_date, end_date]);
+  const availabilityResult = await db.query(availabilityCheck, [room_id, start_date, end_date]);
 
-    if (availabilityResult.rows.length > 0) {
-      return res.redirect("/customer?error=" + encodeURIComponent("Room is not available for the selected dates"));
-    }
+  if (availabilityResult.rows.length > 0) {
+    return res.redirect("/customer?error=" + encodeURIComponent("Room is not available for the selected dates"));
+  }
 
-    try {
-      // Verify the customer exists
-      const customerResult = await db.query(`SELECT * FROM customer WHERE person_ssn = $1`, [customer_ssn]);
-  
-      // add into person database table
-      if (customerResult.rows.length === 0) {
-        const queryPerson = `
+  try {
+    // Verify the customer exists
+    const customerResult = await db.query(`SELECT * FROM customer WHERE person_ssn = $1`, [customer_ssn]);
+
+    // add into person database table
+    if (customerResult.rows.length === 0) {
+      const queryPerson = `
       INSERT INTO person (ssn, phone_number, first_name, last_name, email, address)
       VALUES ($1, $2, $3, $4, $5, $6)
       `;
       await db.query(queryPerson, [customer_ssn, phone_number, first_name, last_name, email, address]);
-  
+
       // add into customer database table
       const query = `
         INSERT INTO customer (person_ssn, phone_number, first_name, last_name, email, address, registration_date)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
       `;
-  
+
       await db.query(query, [customer_ssn, phone_number, first_name, last_name, email, address, start_date]);
 
       // add into booking database table
@@ -306,24 +289,24 @@ app.post("/customer/book-room", async (req, res) => {
       RETURNING booking_id;  
     `;
 
-    // add booking to archive with type as booking and status as comnpleted
-    let bookid = await db.query("SELECT booking_id FROM booking WHERE customer_b_id = $1", [customer_id.rows[0].ssnc_id]);
+      // add booking to archive with type as booking and status as comnpleted
+      let bookid = await db.query("SELECT booking_id FROM booking WHERE customer_b_id = $1", [customer_id.rows[0].ssnc_id]);
 
-    await db.query(`INSERT INTO archive (type, booking_a_id, room_a_id, customer_a_id, start_date, end_date, status) VALUES ('booking', $1, $2, $3, $4, $5, 'completed')`, [bookid, room_id, customer_id.rows[0].ssnc_id, start_date, end_date]);
+      await db.query(`INSERT INTO archive (type, booking_a_id, room_a_id, customer_a_id, start_date, end_date, status) VALUES ('booking', $1, $2, $3, $4, $5, 'completed')`, [bookid, room_id, customer_id.rows[0].ssnc_id, start_date, end_date]);
 
 
-    // since putting it as null is not working we will set employee 1 as online booking done through customer
-    let employee_b_id = 1;
-    
-    let customer_id = await db.query(
-      "SELECT ssnc_id FROM customer WHERE person_ssn = $1; ",
-      [customer_ssn]
-    );
+      // since putting it as null is not working we will set employee 1 as online booking done through customer
+      let employee_b_id = 1;
 
- 
-      
-      await db.query(queryBook, [room_id, customer_id.rows[0].ssnc_id,employee_b_id,start_date, end_date]);
-      }
+      let customer_id = await db.query(
+        "SELECT ssnc_id FROM customer WHERE person_ssn = $1; ",
+        [customer_ssn]
+      );
+
+
+
+      await db.query(queryBook, [room_id, customer_id.rows[0].ssnc_id, employee_b_id, start_date, end_date]);
+    }
 
     res.redirect("/customer?success=true");
   } catch (error) {
@@ -334,8 +317,8 @@ app.post("/customer/book-room", async (req, res) => {
 
 // Search rooms
 app.get("/search-rooms", async (req, res) => {
-  const { start_date, end_date, room_capacity, view, price_range} = req.query;
-  
+  const { start_date, end_date, room_capacity, view, price_range } = req.query;
+
   try {
     let priceMin = 0;
     let priceMax = 10000; // Some very high default value
@@ -408,8 +391,8 @@ app.get("/room/:id", async (req, res) => {
   try {
     const query = `SELECT * FROM room WHERE room_id = $1`;
     const result = await db.query(query, [roomId]);
-    
-     
+
+
     let hotelQuery = await db.query(
       "SELECT * FROM hotel JOIN room ON hotel.hotel_id = room.hroom_id WHERE room_id = $1",
       [roomId]
@@ -417,13 +400,13 @@ app.get("/room/:id", async (req, res) => {
 
     let hotelInfo = await db.query("SELECT * FROM hotel WHERE hotel_id = $1", [hotelQuery.rows[0].hroom_id]);
 
-    
+
 
     if (result.rows.length === 0) {
       return res.status(404).send("Room not found");
     }
 
-    res.render("room-details", { room: result.rows[0] , hotel: hotelInfo.rows[0]});
+    res.render("room-details", { room: result.rows[0], hotel: hotelInfo.rows[0] });
   } catch (error) {
     console.error("Error fetching room details:", error);
     res.status(500).send("Error fetching room details");
