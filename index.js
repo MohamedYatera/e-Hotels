@@ -246,7 +246,6 @@ app.post("/employee/create-customer", async (req, res) => {
 app.post("/customer/book-room", async (req, res) => {
   let { customer_ssn, first_name, last_name, email, phone_number, address, room_id, start_date, end_date } = req.body;
 
-
   // Check room availability
   const availabilityCheck = `
       SELECT * FROM booking 
@@ -266,7 +265,7 @@ app.post("/customer/book-room", async (req, res) => {
     // Verify the customer exists
     const customerResult = await db.query(`SELECT * FROM customer WHERE person_ssn = $1`, [customer_ssn]);
 
-    // add into person database table
+    // Add customer to the database if they don't exist
     if (customerResult.rows.length === 0) {
       const queryPerson = `
       INSERT INTO person (ssn, phone_number, first_name, last_name, email, address)
@@ -274,40 +273,29 @@ app.post("/customer/book-room", async (req, res) => {
       `;
       await db.query(queryPerson, [customer_ssn, phone_number, first_name, last_name, email, address]);
 
-      // add into customer database table
-      const query = `
+      const queryCustomer = `
         INSERT INTO customer (person_ssn, phone_number, first_name, last_name, email, address, registration_date)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
       `;
-
-      await db.query(query, [customer_ssn, phone_number, first_name, last_name, email, address, start_date]);
-
-      // add into booking database table
-      const queryBook = `
-      INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
-      VALUES ($1, $2, $3, $4, $5, 'pending check-in')
-      RETURNING booking_id;  
-    `;
-
-      // add booking to archive with type as booking and status as comnpleted
-      let bookid = await db.query("SELECT booking_id FROM booking WHERE customer_b_id = $1", [customer_id.rows[0].ssnc_id]);
-
-      await db.query(`INSERT INTO archive (type, booking_a_id, room_a_id, customer_a_id, start_date, end_date, status) VALUES ('booking', $1, $2, $3, $4, $5, 'completed')`, [bookid, room_id, customer_id.rows[0].ssnc_id, start_date, end_date]);
-
-
-      // since putting it as null is not working we will set employee 1 as online booking done through customer
-      let employee_b_id = 1;
-
-      let customer_id = await db.query(
-        "SELECT ssnc_id FROM customer WHERE person_ssn = $1; ",
-        [customer_ssn]
-      );
-
-
-
-      await db.query(queryBook, [room_id, customer_id.rows[0].ssnc_id, employee_b_id, start_date, end_date]);
+      await db.query(queryCustomer, [customer_ssn, phone_number, first_name, last_name, email, address, start_date]);
     }
 
+    // Get customer ID
+    const customer_id = await db.query(
+      "SELECT ssnc_id FROM customer WHERE person_ssn = $1;",
+      [customer_ssn]
+    );
+
+    // Insert booking
+    const queryBook = `
+      INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
+      VALUES ($1, $2, $3, $4, $5, 'pending check-in')
+      RETURNING booking_id;
+    `;
+    let employee_b_id = 1; // Default employee ID for online bookings
+    await db.query(queryBook, [room_id, customer_id.rows[0].ssnc_id, employee_b_id, start_date, end_date]);
+
+    // Triggers will handle room availability and archive updates
     res.redirect("/customer?success=true");
   } catch (error) {
     console.error("Error booking room (customer):", error);
