@@ -287,7 +287,7 @@ app.post("/customer/book-room", async (req, res) => {
     );
 
     // Insert booking
-    const queryBook = `
+    const queryBook = `z
       INSERT INTO booking (room_b_id, customer_b_id, employee_b_id, start_date, end_date, status)
       VALUES ($1, $2, $3, $4, $5, 'pending check-in')
       RETURNING booking_id;
